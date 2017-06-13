@@ -31,7 +31,7 @@ class newVisitorTest(unittest.TestCase):
 
         #Once the user hits enter, the page updates and displays the item in a list (i.e. "1: Renew Driver's License")
         inputbox.send_keys(Keys.ENTER)
-
+        
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertTrue(
