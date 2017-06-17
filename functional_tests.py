@@ -14,6 +14,11 @@ class newVisitorTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertIn(row_text, [row.text for row in rows])
+
     #use the wait_for_page_load function when we need to tell selenium to 
     #wait for a click to load/reload a page
     @contextmanager
@@ -46,9 +51,7 @@ class newVisitorTest(unittest.TestCase):
         inputbox.send_keys(Keys.ENTER)
         
         self.browser.implicitly_wait(1)
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Renew Driver\'s License', [row.text for row in rows])
+        self.check_for_row_in_list_table('1: Renew Driver\'s License')
 
         #The user still has a text box that allows them to add another item. The user wants to enter "Do Laundry"
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -57,10 +60,8 @@ class newVisitorTest(unittest.TestCase):
 
         #The page updates, and shows both items
         self.browser.implicitly_wait(1)
-        table = self.browser.find_element_by_id('id_list_table')
-        rows = table.find_elements_by_tag_name('tr')
-        self.assertIn('1: Renew Driver\'s License', [row.text for row in rows])
-        self.assertIn('2: Do Laundry', [row.text for row in rows])
+        self.check_for_row_in_list_table('1: Renew Driver\'s License')
+        self.check_for_row_in_list_table('2: Do Laundry')
 
         #The site creates a unique URL for the user for them to remember the list that they created
         self.fail('Finish the test!')
