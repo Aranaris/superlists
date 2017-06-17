@@ -15,6 +15,7 @@ class newVisitorTest(unittest.TestCase):
         self.browser.quit()
 
     def check_for_row_in_list_table(self, row_text):
+        self.browser.implicitly_wait(3)
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
@@ -48,9 +49,8 @@ class newVisitorTest(unittest.TestCase):
         inputbox.send_keys('Renew Driver\'s License')
 
         #Once the user hits enter, the page updates and displays the item in a list (i.e. "1: Renew Driver's License")
-        inputbox.send_keys(Keys.ENTER)
-        
-        self.browser.implicitly_wait(1)
+        inputbox.send_keys(Keys.ENTER) 
+
         self.check_for_row_in_list_table('1: Renew Driver\'s License')
 
         #The user still has a text box that allows them to add another item. The user wants to enter "Do Laundry"
@@ -58,8 +58,7 @@ class newVisitorTest(unittest.TestCase):
         inputbox.send_keys('Do Laundry')
         inputbox.send_keys(Keys.ENTER)
 
-        #The page updates, and shows both items
-        self.browser.implicitly_wait(1)
+        #The page updates, and shows both items)
         self.check_for_row_in_list_table('1: Renew Driver\'s License')
         self.check_for_row_in_list_table('2: Do Laundry')
 
