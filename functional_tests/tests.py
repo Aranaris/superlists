@@ -1,3 +1,4 @@
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from contextlib import contextmanager
 from selenium.webdriver.common.keys import Keys
@@ -5,7 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import staleness_of
 import unittest
 
-class newVisitorTest(unittest.TestCase):
+class newVisitorTest(LiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -30,7 +31,7 @@ class newVisitorTest(unittest.TestCase):
         
     def test_can_start_a_list_and_retrieve_it_later(self):
         #User opens the homepage of the app
-        self.browser.get('http://localhost:8000')
+        self.browser.get(self.live_server_url)
 
         #The app should indicate that it is meant for creating to-do lists
         self.assertIn('To-Do', self.browser.title)
@@ -67,7 +68,3 @@ class newVisitorTest(unittest.TestCase):
 
         #After the user has finished interacting with the page, they close the page
 
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
