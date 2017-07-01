@@ -50,16 +50,15 @@ class newVisitorTest(LiveServerTestCase):
         #Once the user hits enter, they are taken to a new URL, 
         #and the page updates and displays the item in a list (i.e. "1: Renew Driver's License")
         inputbox.send_keys(Keys.ENTER)
-        vince_list_url = self.browser.current_url
-        self.assertRegex(vince_list_url, '/lists/.+')
-
         with self.wait_for_page_load(timeout=10):
+            vince_list_url = self.browser.current_url
+            self.assertRegex(vince_list_url, '/lists/.+') 
             self.check_for_row_in_list_table('1: Renew Driver\'s License')
         #The user still has a text box that allows them to add another item. The user wants to enter "Do Laundry"
-        inputbox = self.browser.find_element_by_id('id_new_item')
+            inputbox = self.browser.find_element_by_id('id_new_item')
         
-        inputbox.send_keys('Do Laundry')
-        inputbox.send_keys(Keys.ENTER)
+            inputbox.send_keys('Do Laundry')
+            inputbox.send_keys(Keys.ENTER)
 
         #The page updates, and shows both items
         with self.wait_for_page_load(timeout=10):
@@ -83,15 +82,16 @@ class newVisitorTest(LiveServerTestCase):
         inputbox.send_keys('Call mom')
         inputbox.send_keys(Keys.ENTER)
 
-        #The site creates a unique URL for CS
-        cs_list_url = self.browser.current_url
-        self.assertRegex(cs_list_url, '/lists/.+')
-        self.assertNotEqual(cs_list_url, vince_list_url)
+        #The site creates a unique URL for CS 
+        with self.wait_for_page_load(timeout=10):
+            cs_list_url = self.browser.current_url
+            self.assertRegex(cs_list_url, '/lists/.+')
+            self.assertNotEqual(cs_list_url, vince_list_url)
         
         #There's still no trace of Vince's list
-        page_text = self.browser.find_element_by_tag_name('body').text
-        self.assertNotIn('Renew Driver\'s License', page_text)
-        self.assertNotIn('Do Laundry', page_text)
+            page_text = self.browser.find_element_by_tag_name('body').text
+            self.assertNotIn('Renew Driver\'s License', page_text)
+            self.assertNotIn('Do Laundry', page_text)
         
         self.fail('Finish the test!')
         #Visiting the unique URL will bring the user to their to-do list
