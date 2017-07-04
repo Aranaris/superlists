@@ -93,8 +93,15 @@ class newVisitorTest(LiveServerTestCase):
             self.assertNotIn('Renew Driver\'s License', page_text)
             self.assertNotIn('Do Laundry', page_text)
         
-        self.fail('Finish the test!')
+        
         #Visiting the unique URL will bring the user to their to-do list
+        self.browser.get(vince_list_url)
 
+        self.check_for_row_in_list_table('1: Renew Driver\'s License')
+        self.check_for_row_in_list_table('2: Do Laundry')
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Call mom', page_text)
+
+        
         #After the user has finished interacting with the page, they close the page
-
+        self.browser.quit()
