@@ -19,7 +19,7 @@ class newVisitorTest(LiveServerTestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
-
+    
     #use the wait_for_page_load function when we need to tell selenium to 
     #wait for a click to load/reload a page
     @contextmanager
@@ -28,7 +28,32 @@ class newVisitorTest(LiveServerTestCase):
         yield WebDriverWait(self.browser, timeout).until(
             staleness_of(old_page)
         )
+    
+    def test_layout_and_styling(self):
+        #The user goes to the homepage
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024,768)
+
+        #The user notices that the input box is centered
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+                inputbox.location['x'] + inputbox.size['width'] / 2,
+                512,
+                delta=6
+                )
         
+        #The user starts a new list and sees that the input box remains center aligned
+        inputbox.send_keys('testing styling')
+        inputbox.send_keys(u'\ue007')
+        with self.wait_for_page_load(timeout=10):
+            inputbox = self.browser.find_element_by_id('id_new_item')
+            self.assertAlmostEqual(
+                    inputbox.location['x'] + inputbox.size['width'] / 2,
+                    512,
+                    delta = 6
+                    )
+
+
     def test_can_start_a_list_and_retrieve_it_later(self):
         #User opens the homepage of the app
         self.browser.get(self.live_server_url)
