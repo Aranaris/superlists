@@ -10,11 +10,13 @@ cache: pip
 
 install:
   - pip install --quiet --requirement requirements.txt
+  - pip install --quiet pylint
 
 script:
   - ./manage.py makemigrations
   - ./manage.py migrate
   - ./manage.py test lists -v 2
+  - pylint lists superlists functional_tests
 
 notifications:
   email:
