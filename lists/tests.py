@@ -1,10 +1,12 @@
-from django.core.urlresolvers import resolve
-from django.test import TestCase
-from django.http import HttpRequest
-from lists.views import home_page
-from django.template.loader import render_to_string
 import re
+
+from django.core.urlresolvers import resolve
+from django.http import HttpRequest
+from django.template.loader import render_to_string
+from django.test import TestCase
+
 from lists.models import Item, List
+from lists.views import home_page
 
 class HomePageTest(TestCase):
     def test_root_url_resolves_to_home_page_view(self):
@@ -18,7 +20,7 @@ class HomePageTest(TestCase):
         #we want to take out the csrf_token string in order to properly compare the html
         csrf_regex = r'<input[^>]+csrfmiddlewaretoken[^>]+>'
         observed_html = re.sub(csrf_regex, '', response.content.decode())
-        
+
         self.assertEqual(observed_html, expected_html)
 
 
@@ -58,7 +60,7 @@ class ListViewTest(TestCase):
         response = self.client.get('/lists/%d/' % (list_.id,))
         self.assertTemplateUsed(response, 'list.html')
 
-   
+
     def test_displays_only_items_for_that_list(self):
         correct_list = List.objects.create()
         Item.objects.create(text='itemey 1', list=correct_list)
@@ -66,7 +68,7 @@ class ListViewTest(TestCase):
         other_list = List.objects.create()
         Item.objects.create(text='other list item 1', list=other_list)
         Item.objects.create(text='other list item 2', list=other_list)
-        
+
         response = self.client.get('/lists/%d/' % (correct_list.id,))
 
         self.assertContains(response, 'itemey 1')
@@ -85,7 +87,7 @@ class NewListTest(TestCase):
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item')
-    
+
     def test_redirects_after_POST(self):
         response = self.client.post(
                 '/lists/new',
@@ -128,4 +130,3 @@ class NewItemTest(TestCase):
 
         response = self.client.get('/lists/%d/' % (correct_list.id,))
         self.assertEqual(response.context['list'], correct_list)
-

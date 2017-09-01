@@ -1,13 +1,15 @@
+from contextlib import contextmanager
 import os
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
-from contextlib import contextmanager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import staleness_of
-import unittest
 
-class newVisitorTest(StaticLiveServerTestCase):
+# pylint: disable=deprecated-method
+
+class NewVisitorTest(StaticLiveServerTestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -23,8 +25,8 @@ class newVisitorTest(StaticLiveServerTestCase):
         table = self.browser.find_element_by_id('id_list_table')
         rows = table.find_elements_by_tag_name('tr')
         self.assertIn(row_text, [row.text for row in rows])
-    
-    #use the wait_for_page_load function when we need to tell selenium to 
+
+    #use the wait_for_page_load function when we need to tell selenium to
     #wait for a click to load/reload a page
     @contextmanager
     def wait_for_page_load(self, timeout=30):
@@ -32,11 +34,11 @@ class newVisitorTest(StaticLiveServerTestCase):
         yield WebDriverWait(self.browser, timeout).until(
             staleness_of(old_page)
         )
-    
+
     def test_layout_and_styling(self):
         #The user goes to the homepage
         self.browser.get(self.live_server_url)
-        self.browser.set_window_size(1024,768)
+        self.browser.set_window_size(1024, 768)
 
         #The user notices that the input box is centered
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -45,7 +47,7 @@ class newVisitorTest(StaticLiveServerTestCase):
                 512,
                 delta=6
                 )
-        
+
         #The user starts a new list and sees that the input box remains center aligned
         inputbox.send_keys('testing styling')
         inputbox.send_keys(u'\ue007')
@@ -53,9 +55,7 @@ class newVisitorTest(StaticLiveServerTestCase):
             inputbox = self.browser.find_element_by_id('id_new_item')
             self.assertAlmostEqual(
                     inputbox.location['x'] + inputbox.size['width'] / 2,
-                    512,
-                    delta = 6
-                    )
+                    512, delta=6)
 
 
     def test_can_start_a_list_and_retrieve_it_later(self):
@@ -75,17 +75,17 @@ class newVisitorTest(StaticLiveServerTestCase):
 
         #The user should be able to enter "Renew Driver's License" into a text box
         inputbox.send_keys('Renew Driver\'s License')
-        
-        #Once the user hits enter, they are taken to a new URL, 
+
+        #Once the user hits enter, they are taken to a new URL,
         #and the page updates and displays the item in a list (i.e. "1: Renew Driver's License")
         inputbox.send_keys(Keys.ENTER)
         with self.wait_for_page_load(timeout=10):
             vince_list_url = self.browser.current_url
-            self.assertRegex(vince_list_url, '/lists/.+') 
+            self.assertRegex(vince_list_url, '/lists/.+')
             self.check_for_row_in_list_table('1: Renew Driver\'s License')
         #The user still has a text box that allows them to add another item. The user wants to enter "Do Laundry"
             inputbox = self.browser.find_element_by_id('id_new_item')
-        
+
             inputbox.send_keys('Do Laundry')
             inputbox.send_keys(Keys.ENTER)
 
@@ -111,18 +111,18 @@ class newVisitorTest(StaticLiveServerTestCase):
         inputbox.send_keys('Call mom')
         inputbox.send_keys(Keys.ENTER)
 
-        #The site creates a unique URL for CS 
+        #The site creates a unique URL for CS
         with self.wait_for_page_load(timeout=10):
             cs_list_url = self.browser.current_url
             self.assertRegex(cs_list_url, '/lists/.+')
             self.assertNotEqual(cs_list_url, vince_list_url)
-        
+
         #There's still no trace of Vince's list
             page_text = self.browser.find_element_by_tag_name('body').text
             self.assertNotIn('Renew Driver\'s License', page_text)
             self.assertNotIn('Do Laundry', page_text)
-        
-        
+
+
         #Visiting the unique URL will bring the user to their to-do list
         self.browser.get(vince_list_url)
 
@@ -131,6 +131,6 @@ class newVisitorTest(StaticLiveServerTestCase):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Call mom', page_text)
 
-        
+
         #After the user has finished interacting with the page, they close the page
         self.browser.quit()
